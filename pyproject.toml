@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wordfilter"
+version = "0.1.0"
+description = "零依赖敏感词/关键词 DFA 过滤库：全半角与拆词变体识别、最长优先、精确原文定位"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+keywords = ["sensitive words", "dfa", "trie", "敏感词", "内容审核"]
+
+[project.scripts]
+wordfilter = "wordfilter.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["wordfilter*"]
