@@ -1,5 +1,11 @@
 # wordfilter
 
+![Python](https://img.shields.io/badge/python-3.8%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Tests](https://img.shields.io/badge/tests-21%20passing-success)
+![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+
 零依赖的敏感词 / 关键词 DFA 过滤库 —— 适用于聊天审核、评论过滤、内容质检等场景。
 
 - **变体识别**：全角↔半角、大小写、零宽字符、插分隔符（`敏.感.词` / `敏 感 词` / `敏*感*词`）都能命中
@@ -69,6 +75,19 @@ $ echo "这里出现了敏感词，还有敏.感.词变体，但这句话是干�
 ```bash
 python -m unittest discover -s tests
 # Ran 21 tests ... OK
+```
+
+
+## 📁 项目结构
+
+```
+wordfilter/
+├── LICENSE
+├── pyproject.toml
+├── samples/
+├── tests/
+├── wordfilter/
+└── README.md
 ```
 
 ## License
