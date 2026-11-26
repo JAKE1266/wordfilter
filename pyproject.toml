@@ -3,8 +3,8 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "wordfilter"
-version = "0.1.0"
+name = "wordfilter-kit"
+version = "0.1.1"
 description = "零依赖敏感词/关键词 DFA 过滤库：全半角与拆词变体识别、最长优先、精确原文定位"
 readme = "README.md"
 requires-python = ">=3.8"

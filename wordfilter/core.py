@@ -89,7 +89,8 @@ class WordFilter:
         for ch in word:
             if ch in self.ignore:
                 continue
-            out.extend(unicodedata.normalize("NFKC", ch).lower())
+            piece = unicodedata.normalize("NFKC", ch).lower()
+            out.extend(out_ch for out_ch in piece if out_ch not in self.ignore)
         return "".join(out)
 
     def _normalize_text(self, text: str):
@@ -101,6 +102,8 @@ class WordFilter:
                 continue
             piece = unicodedata.normalize("NFKC", ch).lower()
             for out_ch in piece:
+                if out_ch in self.ignore:
+                    continue
                 norm.append(out_ch)
                 spans.append((i, i + 1))
         return "".join(norm), spans

@@ -2,13 +2,13 @@
 
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Tests](https://img.shields.io/badge/tests-21%20passing-success)
+![Tests](https://img.shields.io/badge/tests-24%20passing-success)
 ![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 
 零依赖的敏感词 / 关键词 DFA 过滤库 —— 适用于聊天审核、评论过滤、内容质检等场景。
 
-- **变体识别**：全角↔半角、大小写、零宽字符、插分隔符（`敏.感.词` / `敏 感 词` / `敏*感*词`）都能命中
+- **变体识别**：全角↔半角、大小写、零宽字符、插分隔符（`敏.感.词` / `敏 感 词` / `敏*感*词` / `敏　感词`）都能命中
 - **最长优先**：词库同时有「敏感」「敏感词」时，命中更长的那个
 - **精确还原**：命中区间映射回**原文**下标，打码不偏移
 - **两种模式**：`find_all` 默认互不重叠（打码用）；`overlap=True` 逐一报告嵌套命中（审计用）
@@ -20,7 +20,11 @@
 
 ```bash
 pip install .
+# 或从 GitHub 安装
+pip install git+https://github.com/JAKE1266/wordfilter.git
 ```
+
+发行包名为 `wordfilter-kit`（PyPI 的 `wordfilter` 是无关项目）；Python import 与 CLI 仍为 `wordfilter`。
 
 ## 作为库使用
 
@@ -64,17 +68,22 @@ $ echo "这里出现了敏感词，还有敏.感.词变体，但这句话是干�
 
 ## 设计取舍
 
-- **逐字符 NFKC + 位置映射**：不整串归一化（NFKC 可能改变长度），而是逐字符展开并记录
+- **逐字符 NFKC + 位置映射**：不整串归一化（NFKC 可能改变长度），而是逐字符展开、过滤忽略字符并记录
   `归一化位置 → 原文区间`，命中后能精确切回原文
 - **掩码整段覆盖**：命中区间连分隔符一起打码（`敏.感.词 → *****`），不给复原留线索；区间长度始终等于原文长度
 - **默认忽略集可配置**：`WordFilter(..., ignore="")` 一键关闭全部变体容忍，做严格字面匹配
-- **零依赖**：`pip install wordfilter` 不拉任何包
+- **UTF-8 管道**：CLI 显式使用 UTF-8 标准流，Windows 旧编码环境下不会静默漏检
+- **零依赖**：安装不拉任何第三方包
 
 ## 运行测试
 
 ```bash
 python -m unittest discover -s tests
-# Ran 21 tests ... OK
+# Ran 24 tests ... OK
+
+python -m pip install build twine
+python -m build
+python -m twine check dist/*
 ```
 
 
@@ -82,7 +91,10 @@ python -m unittest discover -s tests
 
 ```
 wordfilter/
+├── .github/workflows/
 ├── LICENSE
+├── MANIFEST.in
+├── CHANGELOG.md
 ├── pyproject.toml
 ├── samples/
 ├── tests/

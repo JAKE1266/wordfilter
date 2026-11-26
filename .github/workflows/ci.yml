@@ -5,22 +5,57 @@ on:
     branches: [main, master]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
+  build:
+    name: 构建发布产物
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: 构建并检查 wheel/sdist
+        run: |
+          python -m pip install build twine
+          python -m build
+          python -m twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+          if-no-files-found: error
+
   test:
     name: 测试 (${{ matrix.os }}, Python ${{ matrix.python }})
+    needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python: ["3.9", "3.11", "3.13"]
+        os: [ubuntu-22.04, windows-latest, macos-latest]
+        python: ["3.8", "3.9", "3.11", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - name: 运行单元测试
-        env:
-          PYTHONIOENCODING: utf-8
-          PYTHONUTF8: "1"
-        run: python -m unittest discover -s tests -v
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: 安装 wheel 并运行冒烟与测试
+        shell: bash
+        run: |
+          python -m venv .venv
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            VENV_PY="$(pwd)/.venv/Scripts/python.exe"
+          else
+            VENV_PY="$(pwd)/.venv/bin/python"
+          fi
+          "$VENV_PY" -m pip install dist/wordfilter_kit-0.1.1-py3-none-any.whl
+          "$VENV_PY" tests/smoke_installed.py
+          cd "$RUNNER_TEMP"
+          "$VENV_PY" -m unittest discover -s "$GITHUB_WORKSPACE/tests" -v

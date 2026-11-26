@@ -14,6 +14,13 @@ from . import __version__
 from .core import DEFAULT_IGNORE, WordFilter, snippet
 
 
+def _configure_standard_streams() -> None:
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8", errors="replace")
+
+
 def load_words(path: str) -> list[str]:
     out = []
     with open(path, encoding="utf-8-sig") as f:
@@ -25,6 +32,7 @@ def load_words(path: str) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    _configure_standard_streams()
     ap = argparse.ArgumentParser(prog="wordfilter", description="敏感词 DFA 过滤管道工具")
     ap.add_argument("--version", action="version", version=f"wordfilter {__version__}")
     sub = ap.add_subparsers(dest="cmd", required=True)

@@ -65,6 +65,20 @@ class TestVariants(unittest.TestCase):
         text = "敏\u200b感\u200c词"
         self.assertTrue(self.wf.contains(text))
 
+    def test_fullwidth_separators_normalized_before_ignore(self):
+        variants = ["敏　感词", "敏．感．词", "敏－感－词", "敏＊感＊词", "敏，感，词"]
+        strict = WordFilter(["敏感词"], ignore="")
+        for text in variants:
+            with self.subTest(text=text):
+                self.assertTrue(self.wf.contains(text))
+                self.assertEqual(self.wf.mask(text), "*" * len(text))
+                self.assertFalse(strict.contains(text))
+
+    def test_custom_ignore_character_is_still_supported(self):
+        wf = WordFilter(["敏感词"], ignore="　")
+        self.assertTrue(wf.contains("敏　感词"))
+        self.assertEqual(wf.mask("敏　感词"), "****")
+
     def test_fullwidth_and_case(self):
         wf = WordFilter(["badword"])
         self.assertTrue(wf.contains("ＢＡＤＷＯＲＤ"))

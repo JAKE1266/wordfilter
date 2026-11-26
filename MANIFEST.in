@@ -1,0 +1,3 @@
+include CHANGELOG.md
+include tests/smoke_installed.py
+recursive-include samples *.txt
